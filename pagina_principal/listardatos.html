@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/estilotabla.css">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="index.html">Agregar Producto</a></li>
+            <li><a href="listardatos.html">Listar Productos</a></li>
+            <li><a href="registro.html">Crear nueva cuenta</a></li>
+            <li><a href="login.html"></a></li>
+
+        </ul>
+    </nav>
+    <h2>Helados</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Sabor</th>
+                <th>Tipo</th>
+                <th>Cobertura</th>
+                <th>Precio</th>
+                <th>Acciones</th> <!-- Nueva columna para las acciones -->
+            </tr>
+        </thead>
+        <tbody id="helados-list"></tbody>
+    </table>
+    <dialog id="modalmodificar">
+        <h2>Modificar Helados</h2>
+        <form id="modificar-form" enctype="multipart/form-data">
+            <input type="hidden" id="producto-id" name="id">
+            <div>
+                <label for="nombre-modificar">Nombre:</label>
+                <input type="text" id="nombre-modificar" name="nombre" required>
+            </div>
+            <div>
+                <label for="descripcion-modificar">Descripción:</label>
+                <input type="text" id="descripcion-modificar" name="descripcion" required>
+            </div>
+            <div>
+                <label for="sabor-modificar">Precio:</label>
+                <input type="number" id="sabor-modificar" name="precio" step="0.001" required>
+            </div>
+            <div>
+                <label for="tipo-modificar">Tipo:</label>
+                <input type="number" id="tipo-modificar" name="tipo" required>
+            </div>
+            <div>
+                <label for="cobertura-modificar">Cobertura:</label>
+                <input type="number" id="cobertura-modificar" name="cobertura" required>
+            </div>
+            <div>
+                <label for="precio-modificar">precio:</label>
+                <input type="number" id="precio-modificar" name="precio" required>
+            </div>
+            <button type="submit">Guardar Cambios</button>
+            <button type="button" onclick="document.getElementById('modalmodificar').close();">Cancelar</button>
+        </form>
+    </dialog>
+
+
+    <script>
+        // Función para cargar los helados al cargar la página
+        window.onload = function () {
+            // Realizar una solicitud GET a la ruta /helados
+            fetch('/helados')
+            // Procesar la respuesta como JSON
+            .then(function(response) {
+                return response.json();
+            })
+            // Cuando se obtienen los datos JSON
+            .then(function(data) {
+                // Obtener una referencia al elemento HTML con el ID 'helados-list'
+                var heladosList = document.getElementById('helados-list');
+                // Iterar sobre cada helado en los datos recibidos
+                data.forEach(function(helado) {
+                    // Crear una nueva fila de tabla
+                    var row = document.createElement('tr');
+                    // Establecer el contenido HTML de la fila con los datos del helado
+                    row.innerHTML = '<td>' + helado.nombre + '</td>' +
+                                    '<td>' + helado.descripcion + '</td>' +
+                                    '<td>' + helado.sabor + '</td>' +
+                                    '<td>' + helado.tipo + '</td>' +
+                                    '<td>' + helado.cobertura + '</td>' +
+                                    '<td>' + helado.precio + '</td>' +
+                                    '<td>' +
+                                    '<button onclick="eliminarProducto(' + helado.id + ')">Eliminar</button>' +
+                                    '<button onclick="modificarProducto(' + helado.id + ')">Modificar</button>' +
+                                    '</td>';
+                    // Agregar la fila a la lista de helados
+                    heladosList.appendChild(row);
+                });
+            });
+        };
+
+        function eliminarProducto(id) {
+                    fetch('/helados/' + id, {
+                        method: 'DELETE'
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                window.location.reload();
+                            } else {
+                                console.error('Error al eliminar producto.');
+                            }
+                        })
+                        .catch(error => console.error('Error en la solicitud:', error));
+                }
+
+                function modificarProducto(id) {
+                    fetch('/helados/' + id)
+                        .then(response => response.json())
+                        .then(producto => {
+                            document.getElementById('producto-id').value = helado.id;
+                            document.getElementById('nombre-modificar').value = helado.nombre;
+                            document.getElementById('descripcion-modificar').value = helado.descripcion;
+                            document.getElementById('sabor-modificar').value = helado.sabor;
+                            document.getElementById('tipo-modificar').value = helado.tipo;
+                            document.getElementById('cobertura-modificar').value = helado.cobertura;
+                            document.getElementById('precio-modificar').value = helado.precio;
+
+
+                            document.getElementById('modalmodificar').showModal();
+                        })
+                        .catch(error => console.error('Error al obtener producto:', error));
+                }
+
+                const modificarForm = document.getElementById('modificar-form');
+                modificarForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+
+                    const id = document.getElementById('producto-id').value;
+                    const formData = new FormData(modificarForm);
+
+                    fetch('/helados/' + id, {
+                        method: 'PUT',
+                        body: formData
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            alert('Producto modificado correctamente');
+                            document.getElementById('modalmodificar').close();
+                            window.location.reload();
+                        })
+                        .catch(error => console.error('Error al modificar producto:', error));
+                });
+
+                const btnModalA = document.querySelector("#btn-modal-agregar-p");
+                btnModalA.addEventListener("click", () => {
+                    modalagregar.showModal();
+                });
+            </script>
+
+</body>
+</html>

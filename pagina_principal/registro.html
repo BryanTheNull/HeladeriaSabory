@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="preload" href="css/styles.css" as="style">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Document</title>
+</head>
+<body>
+    <body>
+    
+        <section class="fondo fondo--registro">
+            <div class="capa-fondo">
+                <main class="contenedor">
+                    <div class="contenido">
+                        <h1>Crea tu cuenta</h1>
+                        <form id="registerForm" action="/register" method="post" class="formulario-registro">
+                            <div class="campoIzq nombre">
+                                <input class="registro__field nombre-field" type="text" placeholder="Nombre" id="nombre"
+                                    name="nombre" required>
+                            </div>
+                            <div class="campoDer apellido">
+                                <input class="registro__field apellido-field" type="text" placeholder="Apellido"
+                                    id="apellido" name="apellido" required>
+                            </div>
+                            <div class="campoIzq email1">
+                                <input class="registro__field email-field" type="email" placeholder="Correo Electronico"
+                                    id="email" name="email" required>
+                            </div>
+                            <div class="campoDer contraseña1">
+                                <input class="registro__field contraseña-field" type="password" placeholder="Contraseña"
+                                    id="contraseña" name="contraseña" required>
+                            </div>
+                            <div class="campoDer contraseña2">
+                                <input class="registro__field contraseña-field" type="password"
+                                    placeholder="Confirmar Contraseña" id="confirmarContraseña" name="confirmarContraseña"
+                                    required>
+                            </div>
+                            <div class="campoIzq boton1">
+                                <a href="login.html" class="boton boton--secundario">Login</a>
+                            </div>
+                            <div class="campoDer boton2">
+                                <input type="submit" value="Crear Cuenta" class="boton boton--primario">
+                            </div>
+                        </form>
+                    </div>
+                </main>
+            </div>
+        </section>
+        <script>
+    
+            document.getElementById('registerForm').addEventListener('submit', async function (event) {
+                event.preventDefault();
+                const form = event.target;
+                const formData = new FormData(form);
+                const nombre = formData.get('nombre').trim();
+                const apellido = formData.get('apellido').trim();
+                const email = formData.get('email').trim();
+                const contraseña = formData.get('contraseña').trim();
+                const confirmarContraseña = formData.get('confirmarContraseña').trim();
+    
+                if (!nombre || !apellido || !email || !contraseña || !confirmarContraseña) {
+                    alert('Todos los campos son obligatorios.');
+                    return;
+                }
+    
+                const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                if (!emailPattern.test(email)) {
+                    alert('Por favor ingresa un correo electrónico válido.');
+                    return;
+                }
+    
+                if (contraseña !== confirmarContraseña) {
+                    alert('Las contraseñas no coinciden.');
+                    return;
+                }
+    
+                const data = {
+                    nombre,
+                    apellido,
+                    email,
+                    contraseña
+                };
+    
+                try {
+                    const response = await fetch('/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    if (response.ok) {
+                        form.reset();
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Hubo un error registrando el usuario.');
+                }
+            });
+        </script>
+    </body> 
+</body>
+</html>
